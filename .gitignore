@@ -1,3 +1,5 @@
 env311/
 
 *.pyc
+
+db.sqlite3
