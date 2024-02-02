@@ -3,9 +3,68 @@
   <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Home Page</title>
+    <title>Instant Search with Django</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/instantsearch.css/themes/satellite-min.css" />
+    <script src="https://cdn.jsdelivr.net/npm/instantsearch.js@4"></script>
+    <style>
+     .ais-SearchBox,
+     .ais-Hits {
+         margin: 1em;
+     }
+    </style>
   </head>
   <body>
-    <h1>Welcome to Our Site</h1>
+    <header>
+      <h1>Search Our Site</h1>
+      <div id="search-box"></div>
+    </header>
+    <main>
+      <div id="hits"></div>
+    </main>
+    <script>
+     const search = instantsearch({
+         indexName: 'YOUR_INDEX_NAME',
+         searchClient: {
+             search(requests) {
+                 return fetch(`/search/multiple_indices`, {
+                     method: 'POST',
+                     headers: {
+                         'Content-Type': 'application/json',
+                     },
+                     body: JSON.stringify({ requests }),
+                 }).then(res => res.json()).then(response => {
+                     return {
+                         results: response.results.map(result => {
+                             return {
+                                 ...result,
+                                 hits: result.hits,
+                                 nbHits: result.nbHits,
+                                 nbPages: result.nbPages,
+                             };
+                         }),
+                     };
+                 });
+             },
+         },
+     });
+
+     search.addWidget(
+         instantsearch.widgets.searchBox({
+             container: '#search-box',
+             placeholder: 'Search for products',
+         })
+     );
+
+     search.addWidget(
+         instantsearch.widgets.hits({
+             container: '#hits',
+             templates: {
+                 item: '{% verbatim %}{{{_highlightResult.name.value}}}{% endverbatim %}',
+             },
+         })
+     );
+
+     search.start();
+    </script>
   </body>
 </html>
