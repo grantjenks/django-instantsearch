@@ -5,6 +5,13 @@ Search API to work with
 [instantsearch.js](https://www.algolia.com/doc/guides/building-search-ui/what-is-instantsearch/js/).
 
 
+# Developer Docs
+
+1. python manage.py runserver_plus --cert /tmp/cert/cert.crt
+
+2. Open https://127.0.0.1:8000/ in Chrome Incognito window
+
+
 # Algolia Search API Docs
 
 Search index (POST)#
