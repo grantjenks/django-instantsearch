@@ -1,10 +1,21 @@
 import json
+import time
 
+from functools import reduce
+from operator import add
 from urllib.parse import unquote
 
+from django.apps import apps
+from django.conf import settings
+from django.contrib.postgres.search import (
+    SearchQuery,
+    SearchRank,
+    SearchVector,
+    SearchHeadline,
+)
 from django.http import JsonResponse, QueryDict
-from django.views.decorators.http import require_http_methods
 from django.views.decorators.csrf import csrf_exempt
+from django.views.decorators.http import require_http_methods
 
 
 EXAMPLE_SEARCH_RESULTS = {
@@ -138,9 +149,50 @@ def search_index_get(request, index_name):
 
 
 def search_index(index_name, params):
-    for key in params:
-        print(key, params[key])
-    result = EXAMPLE_SEARCH_RESULTS[index_name]
+    start = time.monotonic()
+    config = settings.INSTANTSEARCH_CONFIG[index_name]
+    app_label, model_name = config['model'].split('.')
+    model = apps.get_model(app_label, model_name)
+    vector = reduce(add, map(SearchVector, config['fields']))
+    query = SearchQuery(params['query'])
+
+    objects = (
+        model.objects.annotate(
+            _rank=SearchRank(vector, query),
+            _headline=SearchHeadline(
+                ' || '.join(config['fields']),
+                params['query'],
+                start_sel=params['highlightPreTag'],
+                stop_sel=params['highlightPostTag'],
+            ),
+        )
+        .filter(_rank__gte=0.001)
+        .order_by('-_rank')[:10]
+    )
+
+    hits = list(
+        map(
+            lambda obj: {field: getattr(obj, field, '') for field in config['fields']},
+            objects,
+        )
+    )
+
+    for hit, obj in zip(hits, objects):
+        hit['_highlightResult'] = {
+            'text': {'value': obj['_headline'], 'matchLevel': 'full'}
+        }
+
+    result = {
+        'hits': hits,
+        'page': 0,
+        'nbHits': len(hits),
+        'nbPages': 1,
+        'hitsPerPage': 10,
+        'processingTimeMS': (time.monotonic() - start) * 1000,
+        'query': params['query'],
+        'params': str(params),
+        'index': index_name,
+    }
     return result
 
 
