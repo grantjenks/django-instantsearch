@@ -14,7 +14,6 @@ class BookAdmin(admin.ModelAdmin):
         'book_id',
     )
     search_fields = ('title', 'synopsis', 'authors', 'publication_year', 'book_id')
-    list_filter = ('publication_year', 'average_rating')
     fieldsets = (
         (
             None,
