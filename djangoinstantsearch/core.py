@@ -206,6 +206,6 @@ def get_search_engine(index_name):
         return SearchEngine
 
     module_name, class_name = config['search_engine'].rsplit('.', 1)
-    module = __import__(module_name)
+    module = __import__(module_name, fromlist=[None])
     class_ = getattr(module, class_name)
     return class_
