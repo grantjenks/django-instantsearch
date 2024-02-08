@@ -11,6 +11,7 @@ class Book(models.Model):
     image_url = models.URLField(max_length=1024)
     ratings_count = models.BigIntegerField()
     synopsis = models.TextField()
+    book_id = models.IntegerField()
 
     class Meta:
         indexes = [
