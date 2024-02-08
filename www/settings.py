@@ -128,7 +128,9 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 INSTANTSEARCH_CONFIG = {
     'YourIndexName': {
-        'model': 'www.models.Document',
-        'fields': ['title', 'content'],
+        'search_engine': 'djangoinstantsearch.core.SearchEngine',
+        'app_label': 'www',
+        'model_name': 'Book',
+        'fields': ['title', 'synopsis'],
     },
 }
