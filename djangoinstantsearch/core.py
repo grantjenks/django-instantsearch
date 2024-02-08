@@ -164,7 +164,7 @@ class SearchEngine:
 
         for hit, obj in zip(hits, objects):
             hit['_highlightResult'] = {
-                'text': {'value': obj['_headline'], 'matchLevel': 'full'}
+                'text': {'value': obj._headline, 'matchLevel': 'full'}
             }
 
         result = {
