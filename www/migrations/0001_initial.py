@@ -6,39 +6,38 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     initial = True
 
     dependencies = []
 
     operations = [
         migrations.CreateModel(
-            name="Book",
+            name='Book',
             fields=[
                 (
-                    "id",
+                    'id',
                     models.BigAutoField(
                         auto_created=True,
                         primary_key=True,
                         serialize=False,
-                        verbose_name="ID",
+                        verbose_name='ID',
                     ),
                 ),
-                ("title", models.CharField(max_length=255)),
-                ("authors", models.JSONField()),
-                ("publication_year", models.IntegerField()),
-                ("average_rating", models.DecimalField(decimal_places=2, max_digits=3)),
-                ("image_url", models.URLField(max_length=1024)),
-                ("ratings_count", models.BigIntegerField()),
-                ("synopsis", models.TextField()),
+                ('title', models.CharField(max_length=255)),
+                ('authors', models.JSONField()),
+                ('publication_year', models.IntegerField()),
+                ('average_rating', models.DecimalField(decimal_places=2, max_digits=3)),
+                ('image_url', models.URLField(max_length=1024)),
+                ('ratings_count', models.BigIntegerField()),
+                ('synopsis', models.TextField()),
             ],
             options={
-                "indexes": [
+                'indexes': [
                     django.contrib.postgres.indexes.GinIndex(
                         django.contrib.postgres.search.SearchVector(
-                            "title", "synopsis", config="english"
+                            'title', 'synopsis', config='english'
                         ),
-                        name="book_search_vector_index",
+                        name='book_search_vector_index',
                     )
                 ],
             },
